@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pixabay–Editor's Choice</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; }
+    h1 { text-align:center; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      padding: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .load-more {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Pixabay–Editor's Choice</h1>
+
+<div class="gallery" id="gallery"></div>
+<button class="load-more" id="loadMore">Завантажити ще</button>
+
+<script>
+  const API_KEY = '53713108-72b1cb9e0cfa41c1702cd0345';
+  const gallery = document.getElementById('gallery');
+  const loadMoreBtn = document.getElementById('loadMore');
+
+  let page = 1;
+  const perPage = 6;
+
+  async function fetchImages() {
+    const url = `https://pixabay.com/api/?key=${API_KEY}&editors_choice=true&image_type=photo&page=${page}&per_page=${perPage}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    data.hits.forEach(img => {
+      const image = document.createElement('img');
+      image.src = img.webformatURL;
+      image.alt = img.tags;
+      gallery.appendChild(image);
+    });
+  }
+
+  loadMoreBtn.addEventListener('click', () => {
+    page += 1;
+    localStorage.setItem('page', page);
+    fetchImages();
+  });
+
+  const savedPage = localStorage.getItem('page');
+  if (savedPage) page = Number(savedPage);
+
+  fetchImages();
+</script>
+
+</body>
+</html>
